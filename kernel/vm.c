@@ -440,3 +440,34 @@ copyinstr(pagetable_t pagetable, char *dst, uint64 srcva, uint64 max)
     return -1;
   }
 }
+
+int pgtblprint(pagetable_t pagetable, int depth)
+{
+  if (depth > 2)
+    return -1;
+  for (int i = 0; i < PTE_LEVEL_ENTRY_NUMBER; ++i)
+  {
+    pte_t pte = pagetable[i];
+    if (pte & PTE_V)
+    {
+      printf("..");
+      for (int d = 0; d < depth; d++)
+      {
+        printf("..");
+      }
+      printf("%d: pte %p pa %p\n", i, pte, PTE2PA(pte));
+      // if pte node is not final page, please print recursive page
+      if ((pte & (PTE_R | PTE_W | PTE_X)) == 0)
+      {
+        pgtblprint((pagetable_t)PTE2PA(pte), depth + 1);
+      }
+    }
+  }
+  return 0;
+}
+
+int vmprint(pagetable_t pagetable)
+{
+  printf("page table %p\n", pagetable);
+  return pgtblprint(pagetable, 0);
+}

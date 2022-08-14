@@ -344,11 +344,13 @@ sfence_vma()
 #define PXSHIFT(level)  (PGSHIFT+(9*(level)))
 #define PX(level, va) ((((uint64) (va)) >> PXSHIFT(level)) & PXMASK)
 
+#define PTE_LEVEL_BIT 9 // one level page table entry number
+#define PTE_LEVEL_ENTRY_NUMBER (1L << PTE_LEVEL_BIT)
 // one beyond the highest possible virtual address.
 // MAXVA is actually one bit less than the max allowed by
 // Sv39, to avoid having to sign-extend virtual addresses
 // that have the high bit set.
-#define MAXVA (1L << (9 + 9 + 9 + 12 - 1))
+#define MAXVA (1L << (PTE_LEVEL_BIT * 3 + 12 - 1))
 
 typedef uint64 pte_t;
 typedef uint64 *pagetable_t; // 512 PTEs
